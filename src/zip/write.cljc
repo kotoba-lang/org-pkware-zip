@@ -13,9 +13,10 @@
    what makes a content-addressed `.docx`/`.epub`/`.sketch` possible.
 
    Deliberately absent: encryption (a ZIP feature nobody should still be using),
-   split archives, and per-entry compression methods other than stored and
-   deflate."
-  (:require [clojure.string :as str]
+   split archives, and per-entry compression methods other than stored, deflate
+   and bzip2."
+  (:require [bzip2.core :as bzip2]
+            [clojure.string :as str]
             [deflate.core :as deflate]
             [zip.bytes :as b]))
 
@@ -48,18 +49,25 @@
         method   (cond dir?                 :stored
                        (empty? data)        :stored
                        (= method :stored)   :stored
+                       (= method :bzip2)    :bzip2
                        :else                :deflate)
-        deflated (when (= method :deflate) (deflate/deflate-raw data {:level level}))
-        ;; A member that deflates larger than it started is stored instead; the
+        compressed (case method
+                     :deflate (deflate/deflate-raw data {:level level})
+                     ;; method 12 is a bare bzip2 stream. `:level` means blocks of
+                     ;; 100 KB each there, not an effort setting, so it is passed
+                     ;; through unchanged rather than remapped.
+                     :bzip2 (bzip2/compress data {:level (or level 9)})
+                     nil)
+        ;; A member that compresses larger than it started is stored instead; the
         ;; format allows either and every reader handles stored.
-        store?   (or (= method :stored) (>= (count deflated) (count data)))
-        payload  (if store? data deflated)
+        store?   (or (= method :stored) (>= (count compressed) (count data)))
+        payload  (if store? data compressed)
         {:keys [date time]} (if mtime (b/map->dos mtime) b/dos-epoch)]
     {:name      name
      :name-bs   name-bs
      :comment   comment
      :dir?      dir?
-     :method    (if store? 0 8)
+     :method    (cond store? 0 (= method :bzip2) 12 :else 8)
      :flags     (if utf8? flag-utf8 0)
      :crc32     (deflate/crc32 data)
      :size      (count data)
@@ -120,7 +128,7 @@
   "Assemble a ZIP archive → vector of unsigned bytes.
 
    Each entry is `{:name \"path/in/zip\" :bytes <unsigned bytes>}` plus optional
-   `:method` (`:deflate` default, `:stored`), `:level`, `:dir?`, `:comment` and
+   `:method` (`:deflate` default, `:stored`, `:bzip2`), `:level`, `:dir?`, `:comment` and
    `:mtime` (`{:year :month :day :hour :minute :second}`).
 
    Options: `:level` (default for all entries), `:comment` (archive comment),

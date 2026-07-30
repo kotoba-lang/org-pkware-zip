@@ -152,6 +152,30 @@
   (is (= :not-a-zip (reason-of #(zip/entries (vec (repeat 100 0))))))
   (is (= :not-a-zip (reason-of #(zip/entries (->bytes "PK not really"))))))
 
+(deftest bzip2-members-round-trip
+  ;; Method 12 used to be refused by name. It is implemented now that
+  ;; org-sourceware-bzip2 exists — the format does not care which codec you have,
+  ;; so the fix was a codec rather than a special case in the reader.
+  (let [text (vec (mapcat identity (repeat 60 (->bytes "a line that repeats in a member\n"))))
+        archive (zip/build [{:name "bz.txt" :bytes text :method :bzip2}
+                            {:name "df.txt" :bytes text}
+                            {:name "st.bin" :bytes (->bytes "raw") :method :stored}])
+        by-name (into {} (for [e (zip/parse archive)] [(:name e) e]))]
+    (testing "each member carries the method it was asked for"
+      (is (= 12 (:method (get by-name "bz.txt"))))
+      (is (= "bzip2" (:method-name (get by-name "bz.txt"))))
+      (is (= 8 (:method (get by-name "df.txt"))))
+      (is (= 0 (:method (get by-name "st.bin")))))
+    (testing "and decompresses to what went in"
+      (is (= text (:bytes (get by-name "bz.txt"))))
+      (is (= text (:bytes (get by-name "df.txt")))))
+    (testing "bzip2 actually compressed it"
+      (is (< (:compressed-size (get by-name "bz.txt")) (count text))))
+    (testing "a member that bzip2 would grow is stored instead, as with deflate"
+      (let [tiny (zip/parse (zip/build [{:name "t" :bytes (->bytes "x") :method :bzip2}]))]
+        (is (= 0 (:method (first tiny))))
+        (is (= (->bytes "x") (:bytes (first tiny))))))))
+
 (deftest rejects-unsupported-methods
   (let [archive (zip/build [{:name "a.txt" :bytes (->bytes "hello")}])
         cd      (find-central-sig archive)

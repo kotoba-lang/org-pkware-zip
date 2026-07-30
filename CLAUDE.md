@@ -13,9 +13,14 @@ dependency, `org-ietf-deflate`, and nothing else — ever.
   and common; local-header scanning finds members the directory does not list.
   Local headers are only consulted for the `name+extra` length that locates a
   member's data.
-- **Never return undecoded bytes as content.** If the method is not 0 or 8,
+- **Never return undecoded bytes as content.** If the method is not 0, 8 or 12,
   raise `:unsupported-method`. The original decoder passed the compressed bytes
   through, which silently corrupted anything reading a bzip2 or LZMA member.
+- **Method 12 (bzip2) is implemented in both directions** via
+  `org-sourceware-bzip2` (added 2026-07-30). `java.util.zip` cannot be its oracle
+  and neither can macOS `unzip`, which is built without bzip2 and *skips* such
+  members; python's `zipfile` is, and `test/zip/bzip2_interop_test.clj` adapts to
+  an unzip that lacks the method instead of asserting something it cannot check.
 - **Verify CRC-32 and size on read**, with `:verify-crc false` as the explicit
   recovery opt-out. Do not weaken the default.
 - **Writes are reproducible.** MS-DOS epoch timestamps, constant
@@ -27,7 +32,8 @@ dependency, `org-ietf-deflate`, and nothing else — ever.
   format oldest readers get wrong.
 - **The portable suite must pass under both runtimes** (`clojure -M:test` and
   `nbb run-tests.cljs`). nbb has no dependency resolver, so `nbb.edn` points at
-  the sibling `../org-ietf-deflate/src` — the layout west already produces.
+  the siblings `../org-ietf-deflate/src` and `../org-sourceware-bzip2/src` — the
+  layout west already produces.
 
 ## Layout
 

@@ -57,7 +57,7 @@ silent-corruption path:
 
 | condition | `:reason` |
 |---|---|
-| method other than stored/deflate | `:unsupported-method` (with `:method-name`) |
+| method other than stored/deflate/bzip2 | `:unsupported-method` (with `:method-name`) |
 | encrypted member | `:encrypted` |
 | CRC-32 or size disagrees with the directory | `:checksum-mismatch` / `:size-mismatch` |
 | no end-of-central-directory record | `:not-a-zip` |
@@ -73,9 +73,17 @@ data. ZIP64 is supported in both directions: saturated 32-bit fields are widened
 from the `0x0001` extra field on read, and the writer emits the ZIP64 record and
 locator when a count, size or offset no longer fits (or when `:zip64 true`).
 
+**Method 12 (bzip2) is implemented in both directions**, via
+`org-sourceware-bzip2` — pass `:method :bzip2` to `build`. It was refused by name
+until that codec existed; the archive format does not care which codec you have,
+so the fix was a codec rather than a special case here. python's `zipfile` reads
+our bzip2 members and we read its own, which is the oracle for it: Info-ZIP's
+`unzip` is frequently built *without* bzip2 (macOS ships it that way) and skips
+such members rather than verifying them.
+
 Not implemented: encryption, split archives, and compression methods other than
-stored and deflate — bzip2 (12), LZMA (14), zstd (93), xz (95) and PPMd (98)
-are named in errors but not decoded.
+stored, deflate and bzip2 — LZMA (14), zstd (93), xz (95) and PPMd (98) are named
+in errors but not decoded.
 
 ## Test
 

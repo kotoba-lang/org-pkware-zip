@@ -11,8 +11,8 @@
    Three things this reader is deliberately strict about, because the previous
    version was not and each is a silent-corruption path:
 
-   - **Unsupported compression methods raise.** Method 8 (deflate) and 0 (stored)
-     are implemented; bzip2, LZMA, zstd, xz, PPMd and the AE-x encryption
+   - **Unsupported compression methods raise.** Methods 0 (stored), 8 (deflate)
+     and 12 (bzip2) are implemented; LZMA, zstd, xz, PPMd and the AE-x encryption
      wrapper are not. Returning the *compressed* bytes as though they were the
      member's content — the old behaviour — hands a caller silent garbage.
    - **CRC-32 is verified** per member, along with the uncompressed size.
@@ -21,7 +21,8 @@
    Extraction is separated from listing: `entries` reads the directory only, and
    `read-entry` decompresses one member. `parse` keeps the original eager
    behaviour (every member decompressed at once) for existing callers."
-  (:require [clojure.string :as str]
+  (:require [bzip2.core :as bzip2]
+            [clojure.string :as str]
             [deflate.core :as deflate]
             [zip.bytes :as b]
             [zip.write :as write]))
@@ -228,6 +229,8 @@
              out (case (int (:method e))
                    0 raw
                    8 (deflate/inflate-raw raw (select-keys opts [:max-output]))
+                   ;; method 12: a bare bzip2 stream, BZh header and all
+                   12 (bzip2/decompress raw (select-keys opts [:max-output]))
                    (throw (ex-info (str "zip: unsupported compression method: "
                                         (get method-names (:method e) "unknown"))
                                    {:reason :unsupported-method

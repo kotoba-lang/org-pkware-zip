@@ -1,8 +1,13 @@
 {:paths ["src"]
- :deps {io.github.kotoba-lang/org-ietf-deflate {:git/sha "430d754313e9082114ec00554e0b6770d9d318c5"}}
+ :deps {io.github.kotoba-lang/org-ietf-deflate {:git/sha "430d754313e9082114ec00554e0b6770d9d318c5"}
+        ;; method 12 is bzip2. Until org-sourceware-bzip2 existed this method was
+        ;; refused by name; the archive format does not care which codec you
+        ;; have, so the fix was a codec, not a special case here.
+        io.github.kotoba-lang/org-sourceware-bzip2 {:git/sha "4c9f3b214e800f304b3de9c985b08af610704804"}}
  :aliases
  {;; same-monorepo dev against a sibling checkout: clojure -M:local:test
-  :local {:override-deps {io.github.kotoba-lang/org-ietf-deflate {:local/root "../org-ietf-deflate"}}}
+  :local {:override-deps {io.github.kotoba-lang/org-ietf-deflate {:local/root "../org-ietf-deflate"}
+                          io.github.kotoba-lang/org-sourceware-bzip2 {:local/root "../org-sourceware-bzip2"}}}
   :test {:extra-paths ["test"]
          :extra-deps {io.github.cognitect-labs/test-runner
                       {:git/tag "v0.5.1" :git/sha "dfb30dd"}}

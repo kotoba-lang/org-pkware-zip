@@ -64,11 +64,18 @@ jobs:
       - name: Install nbb
         run: npm install -g nbb@1.4.210
 
-      - name: Fetch the pinned org-ietf-deflate as a sibling checkout
+      # nbb has no dependency resolver, so nbb.edn reads its dependencies from
+      # sibling checkouts. Pinned by name, not by position in deps.edn.
+      - name: Fetch the pinned dependencies as sibling checkouts
         run: |
-          sha=$(grep -o '"[0-9a-f]\{40\}"' deps.edn | head -1 | tr -d '"')
-          git clone https://github.com/kotoba-lang/org-ietf-deflate.git ../org-ietf-deflate
-          git -C ../org-ietf-deflate checkout "$sha"
+          set -eu
+          for repo in org-ietf-deflate org-sourceware-bzip2; do
+            sha=$(grep "$repo " deps.edn | grep -o '[0-9a-f]\{40\}' | head -1)
+            test -n "$sha"
+            git clone --quiet "https://github.com/kotoba-lang/$repo.git" "../$repo"
+            git -C "../$repo" checkout --quiet "$sha"
+            echo "$repo @ $sha"
+          done
 
       - name: Run the portable suite on ClojureScript
         run: nbb run-tests.cljs
