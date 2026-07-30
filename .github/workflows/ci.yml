@@ -43,3 +43,32 @@ jobs:
 
       - name: Run tests
         run: clojure -M:test
+
+      - name: Lint
+        run: clojure -M:lint
+
+  # Building and reading an archive must work on a runtime with no host codec,
+  # so the portability claim gets a gate rather than a README paragraph. nbb has
+  # no dependency resolver: org-ietf-deflate comes from the sibling path west
+  # also produces, pinned to the sha in deps.edn.
+  cljs:
+    name: nbb run-tests.cljs (ClojureScript)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install nbb
+        run: npm install -g nbb@1.4.210
+
+      - name: Fetch the pinned org-ietf-deflate as a sibling checkout
+        run: |
+          sha=$(grep -o '"[0-9a-f]\{40\}"' deps.edn | head -1 | tr -d '"')
+          git clone https://github.com/kotoba-lang/org-ietf-deflate.git ../org-ietf-deflate
+          git -C ../org-ietf-deflate checkout "$sha"
+
+      - name: Run the portable suite on ClojureScript
+        run: nbb run-tests.cljs
