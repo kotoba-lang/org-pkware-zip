@@ -1,0 +1,5 @@
+;; nbb has no dependency resolver, so org-ietf-deflate comes from the sibling
+;; checkout — which is exactly how west lays this workspace out
+;; (orgs/kotoba-lang/org-ietf-deflate next to orgs/kotoba-lang/org-pkware-zip).
+;; CI clones the pinned sha to the same relative path.
+{:paths ["src" "test" "../org-ietf-deflate/src"]}
