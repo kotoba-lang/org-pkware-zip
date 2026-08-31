@@ -67,7 +67,7 @@
 ;; second copy of this check -- there was none to copy (ADR-2608261100).
 
 (ns zip.entry-name
-  (:export [name-problem directory?]))
+  (:export [main name-problem directory?]))
 
 ;; --- bytes ------------------------------------------------------------------------
 
@@ -175,3 +175,26 @@
       :empty-segment
 
       :else (segments-problem name 0 end))))
+
+;; --- the artifact's own conformance check ------------------------------------------
+;;
+;; `main` is the browser profile's entry point -- `runtime/browser-host.mjs`
+;; refuses to instantiate a module without one -- and it is not a stub. It
+;; runs three names through the decisions above and answers 0 only when each
+;; still decides the way this object was built to decide, so a COMPILED
+;; artifact can be asked whether it is itself by a host that knows nothing
+;; about ZIP.
+;;
+;; Three, not ten, and that is measured. The native backends evaluate `main`
+;; as a compile-time oracle with a budget: ten of these calls is
+;; `native artifact oracle evaluation rejected` for `aarch64-macos`, three
+;; compiles, and the Wasm target accepts either. The wider check lives in
+;; the suite, which can afford it; this one is what survives to the native
+;; artifact.
+
+(defn main [] :i64
+  (cond
+    (if (= (name-problem "../../etc/passwd") :parent-traversal) false true) 1
+    (if (= (name-problem "a.txt:evil") :drive-or-device-letter) false true) 2
+    (if (= (name-problem "dir/a.txt") :none) false true) 3
+    :else 0))
