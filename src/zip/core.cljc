@@ -22,7 +22,7 @@
    `read-entry` decompresses one member. `parse` keeps the original eager
    behaviour (every member decompressed at once) for existing callers."
   (:require [bzip2.core :as bzip2]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [deflate.core :as deflate]
             [zip.bytes :as b]
             [zip.write :as write]))

@@ -16,7 +16,7 @@
    split archives, and per-entry compression methods other than stored, deflate
    and bzip2."
   (:require [bzip2.core :as bzip2]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [deflate.core :as deflate]
             [zip.bytes :as b]))
 
