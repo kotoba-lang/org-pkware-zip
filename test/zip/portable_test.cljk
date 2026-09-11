@@ -1,6 +1,6 @@
 (ns zip.portable-test
   "Runtime-agnostic suite: builds and reads archives with no `java.util.zip`
-   anywhere. Runs under `clojure -M:test` and `nbb run-tests.cljs`.
+   anywhere. Runs under `clojure -M:test` and `nbb run-tests.cljk`.
 
    Conformance against a real ZIP implementation is in
    `zip.jvm-interop-test` — round-tripping against yourself would not notice a

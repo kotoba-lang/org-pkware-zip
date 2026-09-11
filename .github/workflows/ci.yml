@@ -52,7 +52,7 @@ jobs:
   # no dependency resolver: org-ietf-deflate comes from the sibling path west
   # also produces, pinned to the sha in deps.edn.
   cljs:
-    name: nbb run-tests.cljs (ClojureScript)
+    name: nbb run-tests.cljk (ClojureScript)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -78,4 +78,4 @@ jobs:
           done
 
       - name: Run the portable suite on ClojureScript
-        run: nbb run-tests.cljs
+        run: nbb run-tests.cljk

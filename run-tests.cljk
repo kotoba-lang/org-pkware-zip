@@ -1,6 +1,6 @@
 (ns run-tests
   "Runs the runtime-agnostic suite on ClojureScript via nbb:
-   `nbb run-tests.cljs` (paths come from nbb.edn — including the sibling
+   `nbb run-tests.cljk` (paths come from nbb.edn — including the sibling
    org-ietf-deflate checkout, since nbb has no dependency resolver).
 
    The JVM suite covers conformance against `java.util.zip`; this one exists so
