@@ -19,7 +19,7 @@ dependency, `org-ietf-deflate`, and nothing else — ever.
 - **Method 12 (bzip2) is implemented in both directions** via
   `org-sourceware-bzip2` (added 2026-07-30). `java.util.zip` cannot be its oracle
   and neither can macOS `unzip`, which is built without bzip2 and *skips* such
-  members; python's `zipfile` is, and `test/zip/bzip2_interop_test.clj` adapts to
+  members; python's `zipfile` is, and `test/zip/bzip2_interop_test.cljk` adapts to
   an unzip that lacks the method instead of asserting something it cannot check.
 - **Verify CRC-32 and size on read**, with `:verify-crc false` as the explicit
   recovery opt-out. Do not weaken the default.
@@ -31,7 +31,7 @@ dependency, `org-ietf-deflate`, and nothing else — ever.
   descriptors are emitted. Keep it that way: descriptors are the part of the
   format oldest readers get wrong.
 - **The portable suite must pass under both runtimes** (`clojure -M:test` and
-  `nbb run-tests.cljs`). nbb has no dependency resolver, so `nbb.edn` points at
+  `nbb run-tests.cljk`). nbb has no dependency resolver, so `nbb.edn` points at
   the siblings `../org-ietf-deflate/src` and `../org-sourceware-bzip2/src` — the
   layout west already produces.
 

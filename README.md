@@ -90,7 +90,7 @@ in errors but not decoded.
 ```sh
 clojure -M:test          # JVM: portable suite + conformance against java.util.zip
 clojure -M:local:test    # …against a sibling org-ietf-deflate checkout
-nbb run-tests.cljs       # ClojureScript: build + read an archive, no host codec
+nbb run-tests.cljk       # ClojureScript: build + read an archive, no host codec
 clojure -M:lint
 ```
 
