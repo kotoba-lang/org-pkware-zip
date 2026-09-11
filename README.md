@@ -88,10 +88,10 @@ in errors but not decoded.
 ## Test
 
 ```sh
-clojure -M:test          # JVM: portable suite + conformance against java.util.zip
-clojure -M:local:test    # …against a sibling org-ietf-deflate checkout
-nbb run-tests.cljk       # ClojureScript: build + read an archive, no host codec
-clojure -M:lint
+kbb -M:test          # JVM: portable suite + conformance against java.util.zip
+kbb -M:local:test    # …against a sibling org-ietf-deflate checkout
+kbb --backend sci run-tests.cljk       # ClojureScript: build + read an archive, no host codec
+kbb -M:lint
 ```
 
 `java.util.zip` appears only in `test/zip/*_test.clj`, as an oracle in both
