@@ -30,8 +30,8 @@ dependency, `org-ietf-deflate`, and nothing else — ever.
 - **Sizes and CRCs are known before the local header is written**, so no data
   descriptors are emitted. Keep it that way: descriptors are the part of the
   format oldest readers get wrong.
-- **The portable suite must pass under both runtimes** (`clojure -M:test` and
-  `nbb run-tests.cljk`). nbb has no dependency resolver, so `nbb.edn` points at
+- **The portable suite must pass under both runtimes** (`kbb -M:test` and
+  `kbb --backend sci run-tests.cljk`). nbb has no dependency resolver, so `nbb.edn` points at
   the siblings `../org-ietf-deflate/src` and `../org-sourceware-bzip2/src` — the
   layout west already produces.
 

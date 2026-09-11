@@ -10,7 +10,7 @@
         ;; have, so the fix was a codec, not a special case here.
         io.github.kotoba-lang/org-sourceware-bzip2 {:git/sha "4c9f3b214e800f304b3de9c985b08af610704804"}}
  :aliases
- {;; same-monorepo dev against a sibling checkout: clojure -M:local:test
+ {;; same-monorepo dev against a sibling checkout: kbb -M:local:test
   :local {:override-deps {io.github.kotoba-lang/org-ietf-deflate {:local/root "../org-ietf-deflate"}
                           io.github.kotoba-lang/org-sourceware-bzip2 {:local/root "../org-sourceware-bzip2"}}}
   :test {:extra-paths ["test"]
