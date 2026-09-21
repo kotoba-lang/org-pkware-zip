@@ -105,7 +105,7 @@
   ;; and `--output` are all required (ADR-2608262000); the probe passes all
   ;; three, and this records why it looks the way it does.
   (let [source (slurp (io/file (System/getProperty "user.dir")
-                               "test" "zip" "artifact_probe.cljs"))]
+                               "test" "zip" "artifact_probe.cljk"))]
     (is (str/includes? source "\"-M\" \"compile\""))
     (is (str/includes? source "--target\" \"wasm32-browser"))
     (is (str/includes? source "path/resolve") "an absolute path, or the CLI answers :decode")))
