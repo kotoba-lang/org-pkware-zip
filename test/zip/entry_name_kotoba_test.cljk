@@ -23,7 +23,7 @@
 ;; belongs to whatever holds the set. `name-problem` answers one name.
 
 (ns zip.entry-name-kotoba-test
-  (:require [clojure.java.io :as io]
+  (:require [kotoba.io :as io]
             [kotoba.test :refer [deftest is testing]]
             [kotoba.compiler.core :as compiler]
             [kotoba.kir :as ir]
@@ -69,7 +69,7 @@
    ["good/../../out.txt" :parent-traversal "traversal after a legitimate segment"]])
 
 (deftest guest-source-is-present
-  (is (.exists guest-file) (str "kotoba object not found at " guest-file)))
+  (is (io/exists? guest-file) (str "kotoba object not found at " guest-file)))
 
 (deftest every-hostile-name-survives-the-round-trip
   (let [names (mapv first hostile)]

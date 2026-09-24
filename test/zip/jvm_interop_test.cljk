@@ -8,7 +8,7 @@
    and fail in every other tool. `ZipFile` is used rather than `ZipInputStream`
    where possible because it reads the *central directory*, which is what real
    consumers (and `unzip`) do."
-  (:require [kotoba.test :refer [deftest is testing]]
+  (:require [kotoba.bytes :as kbytes] [kotoba.test :refer [deftest is testing]]
             [zip.bytes :as b]
             [zip.core :as zip])
   (:import [java.io ByteArrayOutputStream ByteArrayInputStream File]
@@ -26,7 +26,7 @@
   (let [out (ByteArrayOutputStream.)
         zos (ZipOutputStream. out)]
     (doseq [[n c] entries]
-      (let [bs (.getBytes ^String c "UTF-8")
+      (let [bs (kbytes/utf8-bytes ^String c)
             e  (ZipEntry. ^String n)]
         (when stored?
           (.setMethod e ZipEntry/STORED)
@@ -64,7 +64,7 @@
                      out (ByteArrayOutputStream.)
                      buf (byte-array 65536)]
                  (loop [] (let [n (.read is buf)] (when (pos? n) (.write out buf 0 n) (recur))))
-                 (String. (.toByteArray out) "UTF-8"))])))))
+                 (kbytes/utf8-string (.toByteArray out)))])))))
 
 (def ^:private members
   [["a.txt" "hello"]
@@ -108,7 +108,7 @@
                (let [out (ByteArrayOutputStream.)
                      buf (byte-array 65536)]
                  (loop [] (let [n (.read zis buf)] (when (pos? n) (.write out buf 0 n) (recur))))
-                 (recur (assoc acc (.getName e) (String. (.toByteArray out) "UTF-8"))))
+                 (recur (assoc acc (.getName e) (kbytes/utf8-string (.toByteArray out)))))
                acc))))))
 
 (deftest our-zip64-archives-are-read-by-the-reference
@@ -159,7 +159,7 @@
 
 (deftest we-agree-with-the-reference-on-crc32
   (doseq [[_ c] members]
-    (let [bs (.getBytes ^String c "UTF-8")
+    (let [bs (kbytes/utf8-bytes ^String c)
           crc (CRC32.)]
       (.update crc bs)
       (is (= (.getValue crc) (long (:crc32 (first (zip/entries (java-zip [["x" c]])))))
