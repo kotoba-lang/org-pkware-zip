@@ -2,7 +2,7 @@
   "ZIP decode validated against real archives built by java.util.zip
    (ZipOutputStream defaults to raw DEFLATE → exercises inflate-raw).
    This library itself never uses java.util.zip."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [zip.core :as zip]))
 
 (defn- make-zip [entries]                                     ; [[name content] ...]

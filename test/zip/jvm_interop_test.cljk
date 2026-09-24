@@ -8,7 +8,7 @@
    and fail in every other tool. `ZipFile` is used rather than `ZipInputStream`
    where possible because it reads the *central directory*, which is what real
    consumers (and `unzip`) do."
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [zip.bytes :as b]
             [zip.core :as zip])
   (:import [java.io ByteArrayOutputStream ByteArrayInputStream File]
