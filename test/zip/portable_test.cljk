@@ -7,7 +7,7 @@
    mis-placed header field that both halves agree on."
   (:require [zip.bytes :as b]
             [zip.core :as zip]
-            #?(:clj  [clojure.test :refer [deftest is testing]]
+            #?(:clj  [kotoba.test :refer [deftest is testing]]
                :cljs [cljs.test :refer [deftest is testing]])))
 
 (defn- ->bytes [s] (b/str->utf8 s))
