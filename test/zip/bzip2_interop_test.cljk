@@ -7,13 +7,12 @@
    file rather than in `zip.jvm-interop-test`.
 
    Skipped loudly when python3 is missing."
-  (:require [clojure.java.io :as io]
-            [clojure.java.shell :as shell]
+  (:require [kotoba.io :as kio] [clojure.java.io :as io]
+            [kotoba.process :as shell]
             [kotoba.lang.text :as str]
             [kotoba.test :refer [deftest is testing]]
             [zip.core :as zip])
-  (:import [java.io File]
-           [java.nio.file Files]))
+  (:import [java.io File]))
 
 (defn- have-python? []
   (try (zero? (:exit (shell/sh "bash" "-c" "command -v python3")))
@@ -24,12 +23,12 @@
        (catch Exception _ false)))
 
 (defn- temp-dir []
-  (.toFile (Files/createTempDirectory
-            "org-pkware-zip-bz2-" (make-array java.nio.file.attribute.FileAttribute 0))))
+  (kio/temp-dir
+            "org-pkware-zip-bz2-"))
 
 (defn- rm-rf [^File f] (doseq [c (reverse (file-seq f))] (.delete ^File c)))
 (defn- ->bytes ^bytes [v] (byte-array (map unchecked-byte v)))
-(defn- read-ubytes [^File f] (mapv #(bit-and (int %) 0xff) (Files/readAllBytes (.toPath f))))
+(defn- read-ubytes [^File f] (mapv #(bit-and (int %) 0xff) (kio/read-all-bytes f)))
 (defn- ascii [s] (mapv int s))
 
 (defn- python! [dir script]
