@@ -1,4 +1,4 @@
-# CLAUDE.md — org-pkware-zip
+# AGENTS.md — org-pkware-zip
 
 ZIP container read + write (PKWARE APPNOTE.TXT) in portable `.cljc`. One
 dependency, `org-ietf-deflate`, and nothing else — ever.
